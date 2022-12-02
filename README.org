@@ -1,0 +1,13 @@
+#+AUTHOR: Maksim Fesenko
+#+DESCRIPTION: Image bot
+
+
+* Info
+Simple bot, that extract exif from image and can crop image x2
+
+* Run
+With docker:
+
+#+begin_src bash
+docker run -e IMAGE_BOT_API={telegram bot token} drresist/image-bot:latest
+#+end_src

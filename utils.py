@@ -7,7 +7,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 def get_exif(image: Image.isImageType):
     props = {}
     i = Image.open(image)
-    info = i._getexif()
+    info = i.getexif()
     for tag, value in info.items():
         decoded = TAGS.get(tag, tag)
         props[decoded] = value
@@ -95,8 +95,6 @@ def crop_image(image, n=1, size=None):
     cropped = image_object.crop((left, upper, right, lower))
     file_name_x1 = f"{image}_cropx{n * 2}.jpeg"
     cropped.save(fp=file_name_x1)
-
-    # Добавляем условие если нужно х4 сделать
 
     if n != 1:
         image_object = Image.open(file_name_x1)

@@ -1,6 +1,7 @@
 import os
 import time
 import urllib.request
+from loguru import logger
 
 from telebot.types import (
     InlineKeyboardMarkup,
@@ -9,21 +10,18 @@ from telebot.types import (
 import telebot
 from utils import show_exif, crop_image, extract_coordinates
 
-admin = ""
-
 # LOGGER
 API_TOKEN = os.environ["IMAGE_BOT_API"]
 bot = telebot.TeleBot(API_TOKEN)
 
-
 BOT_OPTIONS = (" exif", " cropx2", " score", " geo")
-
 
 # Handle images
 @bot.message_handler(content_types=["document"])
 def image_handler(message: telebot.types.Message):
-    doc_name = "cache/" + message.document.file_name
+    logger.debug(f"{message.date} recieve message: from {message.from_user}")
     file = bot.get_file(message.document.file_id)
+    doc_name = "cache/" + message.document.file_name
     mime = message.document.mime_type.split("/")[0]
     if (
             mime == 'image'
@@ -66,14 +64,14 @@ def parse_call(call: telebot.types.CallbackQuery):
     file = call.data.split(' ')[0]
     if func == 'exif':
         try:
-            print(show_exif(file))
+            logger.debug(show_exif(file))
             bot.answer_callback_query(
                 callback_query_id=call.id,
                 text=show_exif(file),
                 show_alert=True
             )
         except Exception as e:
-            print(e)
+            logger.debug(e)
             bot.answer_callback_query(
                 callback_query_id=call.id,
                 text="Can't extract exif",
@@ -82,7 +80,7 @@ def parse_call(call: telebot.types.CallbackQuery):
     elif func == 'cropx2':
         # Use crop function
         cropped_image = crop_image(file)
-        print(cropped_image)
+        logger.debug(cropped_image)
         bot.send_document(
             chat_id=call.message.chat.id, data=open(f"{file}_cropx2.jpeg", "rb")
         )
@@ -90,20 +88,20 @@ def parse_call(call: telebot.types.CallbackQuery):
         print("perform score calc's")
     elif func == 'geo':
         try:
-
             lat, longit = extract_coordinates(file)
-            print(f"{lat} - {longit}")
+            logger.debug(f"{lat} - {longit}")
         except:
-            print("can't extract geo tag")
+            logger.error(f"Can't extract geo tag")
 
 
-@bot.message_handler(regexp="#clean")
+@bot.message_handler(commands=["/clean"])
 def delete_images(message: telebot.types.Message):
     # if message.from_user in admin:
     cache = os.listdir("cache")
     for f in cache:
-        os.remove("cache/" + f)
-    print("Clean up complete")
+        logger.info("clean " + f)
+        os.remove("cache/" + f) 
+    bot.reply_to(message, text="CleanUp complete.")
 
 
 # Run bot

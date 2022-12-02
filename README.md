@@ -1,4 +1,23 @@
-# ImageTelegramBot
-Telegram bot, that extract meta-info from images and crop them by x2/x4. 
 
-The bot was created for a chat room in which the technical component of mobile photos was explored in detail
+# Table of Contents
+
+1.  [Info](#orgf137d10)
+2.  [Run](#org42d937a)
+
+
+
+<a id="orgf137d10"></a>
+
+# Info
+
+Simple bot, that extract exif from image and can crop image x2
+
+
+<a id="org42d937a"></a>
+
+# Run
+
+With docker:
+
+    docker run -e IMAGE_BOT_API={telegram bot token} drresist/image-bot:latest
+
