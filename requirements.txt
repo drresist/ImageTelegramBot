@@ -1,10 +1,13 @@
-certifi==2020.6.20
-chardet==3.0.4
-idna==2.10
-Pillow==9.3
-pyTelegramBotAPI==3.7.3
-requests==2.24.0
-six==1.15.0
-urllib3==1.25.10
-python-crontab~=2.5.1
-loguru==0.6.0
+# Core dependencies
+pyTelegramBotAPI>=4.15.0
+Pillow>=10.0.0
+loguru>=0.7.0
+
+# HTTP and utilities
+requests>=2.31.0
+certifi>=2023.7.22
+urllib3>=2.0.0
+
+# Testing (optional)
+pytest>=7.4.0
+pytest-cov>=4.1.0
