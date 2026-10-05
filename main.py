@@ -1,4 +1,5 @@
 """Telegram bot for image processing."""
+import html
 import logging
 from pathlib import Path
 from typing import Optional
@@ -157,13 +158,31 @@ def handle_callback(call: CallbackQuery):
 
     try:
         if option == "exif":
-            exif_text = show_exif(str(file_path))
-            logger.debug(f"EXIF data extracted: {exif_text[:100]}...")
-            bot.answer_callback_query(
-                callback_query_id=call.id,
-                text=exif_text,
-                show_alert=True,
+            try:
+                exif_text = show_exif(str(file_path))
+                logger.debug(f"EXIF data extracted: {exif_text[:100]}...")
+                message_text = f"<pre>{html.escape(exif_text)}</pre>"
+                parse_mode = "HTML"
+            except KeyError:
+                logger.info(f"No EXIF metadata for {file_path}")
+                message_text = "Метаданных нет"
+                parse_mode = None
+
+            reply_target = (
+                call.message.reply_to_message
+                if call.message and call.message.reply_to_message
+                else None
             )
+            if reply_target is not None:
+                bot.reply_to(reply_target, message_text, parse_mode=parse_mode)
+            else:
+                bot.send_message(
+                    call.message.chat.id,
+                    message_text,
+                    parse_mode=parse_mode,
+                )
+
+            bot.answer_callback_query(call.id, show_alert=False)
 
         elif option == "cropx2":
             logger.info(f"Cropping image: {file_path}")
