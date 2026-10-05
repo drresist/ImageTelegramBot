@@ -118,11 +118,13 @@ def show_exif(image_path: str) -> str:
         
     Raises:
         FileNotFoundError: If the image file doesn't exist.
-        KeyError: If required EXIF fields are missing.
+        KeyError: If EXIF metadata is missing or empty.
     """
     try:
         exif = get_exif(image_path)
-        
+        if not exif:
+            raise KeyError("No EXIF metadata")
+
         make = exif.get("Make", "Unknown")
         model = exif.get("Model", "Unknown")
         iso = exif.get("ISOSpeedRatings", "N/A")

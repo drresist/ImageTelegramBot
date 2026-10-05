@@ -130,5 +130,26 @@ class TestCleanupCache:
             assert test_file.exists()
 
 
+class TestShowExif:
+    """Tests for EXIF formatting."""
+
+    def test_no_exif_raises_keyerror(self):
+        """Image without EXIF metadata should raise KeyError."""
+        with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
+            img = Image.new('RGB', (100, 100), color='red')
+            img.save(tmp.name, 'JPEG')
+            tmp_path = tmp.name
+
+        try:
+            with pytest.raises(KeyError):
+                show_exif(tmp_path)
+        finally:
+            os.unlink(tmp_path)
+
+    def test_file_not_found(self):
+        """Missing file should raise FileNotFoundError."""
+        with pytest.raises(FileNotFoundError):
+            show_exif("nonexistent_file.jpg")
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
